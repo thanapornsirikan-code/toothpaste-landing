@@ -1,0 +1,195 @@
+ <!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยาสีฟันสมุนไพร & ฟันขาว</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <nav class="bg-teal-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold">🦷 SmileBright ยาสีฟัน</h1>
+        <div>
+            <button onclick="showTab('shop')" class="bg-white text-teal-600 px-3 py-1 rounded font-bold mr-2">หน้าร้าน (สั่งซื้อ)</button>
+            <button onclick="showTab('admin'); loadOrders();" class="bg-teal-800 text-white px-3 py-1 rounded font-bold">หลังบ้าน (แพ็คของ/จ่าหน้า)</button>
+        </div>
+    </nav>
+
+    <div id="shop-tab" class="max-w-4xl mx-auto p-6">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">ยาสีฟันสูตรเข้มข้น เพื่อสุขภาพช่องปากที่ดี</h2>
+            <p class="text-gray-600 mt-2">เลือกสูตรที่ใช่สำหรับคุณ ส่งฟรีทั่วประเทศ!</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow border">
+                <img src="./images/sku1.avif" alt="สูตรสมุนไพร" class="w-full h-48 object-cover rounded mb-4 bg-gray-200">
+                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">SKU-01</span>
+                <h3 class="text-xl font-bold mt-2">สูตรสมุนไพรธรรมชาติ (Herbal Fresh)</h3>
+                <p class="text-gray-600 text-sm mt-1">ลดกลิ่นปาก ลมหายใจหอมสดชื่นยาวนาน 12 ชม.</p>
+                <p class="text-2xl font-bold text-teal-600 mt-3">150 บาท</p>
+                <div class="mt-4 flex items-center">
+                    <label class="mr-2 font-bold">จำนวน:</label>
+                    <input type="number" id="sku1" value="0" min="0" onchange="calcTotal()" class="border rounded p-2 w-20 text-center">
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow border">
+                <img src="./images/sku2.webp" alt="สูตรฟันขาว" class="w-full h-48 object-cover rounded mb-4 bg-gray-200">
+                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">SKU-02</span>
+                <h3 class="text-xl font-bold mt-2">สูตรฟันขาวประกายมุก (Ultra White)</h3>
+                <p class="text-gray-600 text-sm mt-1">ขจัดคราบชา กาแฟ ฟันขาวขึ้นอย่างเป็นธรรมชาติ</p>
+                <p class="text-2xl font-bold text-teal-600 mt-3">180 บาท</p>
+                <div class="mt-4 flex items-center">
+                    <label class="mr-2 font-bold">จำนวน:</label>
+                    <input type="number" id="sku2" value="0" min="0" onchange="calcTotal()" class="border rounded p-2 w-20 text-center">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+            <h3 class="text-xl font-bold mb-4 border-b pb-2">ข้อมูลจัดส่งสินค้า</h3>
+            <div class="grid gap-4">
+                <div>
+                    <label class="block font-bold mb-1">ชื่อ-นามสกุล ผู้รับ</label>
+                    <input type="text" id="cust-name" class="w-full border rounded p-2" placeholder="เช่น สมชาย ใจดี">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">เบอร์โทรศัพท์</label>
+                    <input type="text" id="cust-phone" class="w-full border rounded p-2" placeholder="เช่น 081-234-5678">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">ที่อยู่จัดส่ง (พร้อมรหัสไปรษณีย์)</label>
+                    <textarea id="cust-address" class="w-full border rounded p-2" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
+                </div>
+                <div class="text-right text-xl font-bold text-teal-700">
+                    ยอดรวมทั้งหมด: <span id="total-price">0</span> บาท
+                </div>
+                <button onclick="submitOrder()" id="btn-submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-lg text-lg">
+                    ยืนยันการสั่งซื้อ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-tab" class="max-w-5xl mx-auto p-6 hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">📦 ระบบจัดการออเดอร์ (หยิบสินค้า & จ่าหน้าพัสดุ)</h2>
+            <button onclick="loadOrders()" class="bg-blue-600 text-white px-4 py-2 rounded">รีเฟรชข้อมูล</button>
+        </div>
+        <div id="orders-list" class="grid gap-4">
+            <p class="text-gray-500">กำลังโหลดข้อมูล...</p>
+        </div>
+    </div>
+
+    <div id="label-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg max-w-lg w-full">
+            <div id="print-area" class="border-2 border-black p-6">
+                <div class="border-b-2 border-black pb-2 mb-4 flex justify-between">
+                    <div>
+                        <p class="font-bold text-sm">ผู้ส่ง (SENDER):</p>
+                        <p class="text-sm">ร้าน SmileBright ยาสีฟัน</p>
+                        <p class="text-xs">กทม. 10110 โทร. 02-999-9999</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="border border-black px-2 py-1 font-bold text-sm">ชำระเงินแล้ว</span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <p class="font-bold text-lg">ผู้รับ (RECEIVER):</p>
+                    <p id="lbl-name" class="text-xl font-bold mt-1"></p>
+                    <p id="lbl-phone" class="font-bold"></p>
+                    <p id="lbl-address" class="mt-1 text-gray-800"></p>
+                </div>
+                <div class="border-t-2 border-dashed border-black pt-3 bg-gray-100 p-2">
+                    <p class="font-bold text-sm underline">รายการหยิบสินค้า (Packing List):</p>
+                    <ul id="lbl-items" class="list-disc ml-5 text-sm font-bold mt-1"></ul>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end gap-2">
+                <button onclick="window.print()" class="bg-green-600 text-white px-4 py-2 rounded font-bold">🖨️ สั่งปริ้นท์ใบปะหน้า</button>
+                <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "ใส่_URL_ของ_APPS_SCRIPT_ที่นี่";
+
+        function showTab(tab) {
+            document.getElementById('shop-tab').classList.toggle('hidden', tab !== 'shop');
+            document.getElementById('admin-tab').classList.toggle('hidden', tab !== 'admin');
+        }
+
+        function calcTotal() {
+            const q1 = parseInt(document.getElementById('sku1').value) || 0;
+            const q2 = parseInt(document.getElementById('sku2').value) || 0;
+            const total = (q1 * 150) + (q2 * 180);
+            document.getElementById('total-price').innerText = total;
+            return total;
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const address = document.getElementById('cust-address').value;
+            const sku1 = parseInt(document.getElementById('sku1').value) || 0;
+            const sku2 = parseInt(document.getElementById('sku2').value) || 0;
+            const total = calcTotal();
+
+            if (!name || !phone || !address || total === 0) {
+                alert("กรุณากรอกข้อมูลให้ครบและเลือกสินค้าอย่างน้อย 1 ชิ้นครับ");
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit');
+            btn.innerText = "กำลังบันทึกข้อมูล...";
+            btn.disabled = true;
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ name, phone, address, sku1, sku2, total })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("สั่งซื้อสำเร็จ! ข้อมูลถูกบันทึกลง Google Sheet เรียบร้อยแล้ว");
+                document.getElementById('cust-name').value = "";
+                document.getElementById('cust-phone').value = "";
+                document.getElementById('cust-address').value = "";
+                document.getElementById('sku1').value = 0;
+                document.getElementById('sku2').value = 0;
+                calcTotal();
+            })
+            .catch(err => alert("เกิดข้อผิดพลาด: " + err))
+            .finally(() => {
+                btn.innerText = "ยืนยันการสั่งซื้อ";
+                btn.disabled = false;
+            });
+        }
+
+        function loadOrders() {
+            const list = document.getElementById('orders-list');
+            list.innerHTML = "<p>กำลังดึงข้อมูลจาก Google Sheet...</p>";
+
+            fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(orders => {
+                list.innerHTML = "";
+                if (orders.length === 0) {
+                    list.innerHTML = "<p>ยังไม่มีออเดอร์สั่งซื้อ</p>";
+                    return;
+                }
+                orders.reverse().forEach((ord, index) => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded shadow border flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+                    card.innerHTML = `
+                        <div>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs fon
